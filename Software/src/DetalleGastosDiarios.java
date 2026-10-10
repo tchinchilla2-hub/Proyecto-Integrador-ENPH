@@ -85,8 +85,6 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(null, null));
-
         jLabel13.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel13.setText("Presentación por unidad (opcional)");
 
@@ -278,6 +276,8 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
 
         jButton2.setText("Volver");
         jButton2.addActionListener(this::jButton2ActionPerformed);
+
+        jScrollPane1.setBorder(null);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
