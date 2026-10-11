@@ -8,7 +8,7 @@
  * @author thain
  */
 public class AdquisiciónClasificación extends javax.swing.JFrame {
-    
+    private GastoDiario gastoActual;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdquisiciónClasificación.class.getName());
 
     /**
@@ -16,6 +16,18 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
      */
     public AdquisiciónClasificación() {
         initComponents();
+         // Centrar el formulario
+         setLocationRelativeTo(null);
+
+        FormaAdquisicion.setSelectedIndex(0);
+        FrecuenciaCompra.setSelectedIndex(0);
+        LugarCompra.setSelectedIndex(0);
+        FrecuenciaCompra.setEnabled(false);
+        ValorPagado.setText("");
+    }
+    public AdquisiciónClasificación(GastoDiario gasto) {
+    this();
+    this.gastoActual = gasto;
     }
 
     /**
@@ -28,6 +40,7 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel9 = new javax.swing.JLabel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel3 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -39,17 +52,17 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        FormaAdquisicion = new javax.swing.JComboBox<>();
+        FrecuenciaCompra = new javax.swing.JComboBox<>();
+        LugarCompra = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        GastoHogar = new javax.swing.JRadioButton();
+        GastoPersonal = new javax.swing.JRadioButton();
+        ValorPagado = new javax.swing.JTextField();
+        btnAnterior = new javax.swing.JButton();
+        btGuardar = new javax.swing.JButton();
 
         jLabel9.setFont(new java.awt.Font("Arial", 1, 28)); // NOI18N
         jLabel9.setText("Información del alimento adquirido");
@@ -123,11 +136,12 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setText("Frecuencia de compra:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        FormaAdquisicion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una opción", "Compra", "Recibidos como pago por trabajo", "Regalo o donación", "Intercambio o trueque", "Traídos de la finca o producidos por el hogar", "Tomados de un negocio del hogar" }));
+        FormaAdquisicion.addActionListener(this::FormaAdquisicionActionPerformed);
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        FrecuenciaCompra.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una frecuencia", "Diario", "Varias veces por semana", "Semanal", "Quincenal", "Mensual", "Bimestral", "Trimestral", "Esporádico" }));
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        LugarCompra.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un lugar", "Supermercado", "Tienda de barrio", "Plaza de mercado", "Vendedor ambulante", "Restaurante", "Cafetería o comidas rápidas", "A través de internet", "Plazoleta de comidas" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -139,15 +153,15 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(100, 100, 100)
-                        .addComponent(jComboBox1, 0, 303, Short.MAX_VALUE))
+                        .addComponent(FormaAdquisicion, 0, 303, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(53, 53, 53)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(FrecuenciaCompra, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(LugarCompra, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -156,15 +170,15 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(FormaAdquisicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(FrecuenciaCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(LugarCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -176,15 +190,16 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
         jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel17.setText("valor pagado o estimado");
 
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Gasto del hogar");
-        jRadioButton1.addActionListener(this::jRadioButton1ActionPerformed);
+        buttonGroup1.add(GastoHogar);
+        GastoHogar.setSelected(true);
+        GastoHogar.setText("Gasto del hogar");
+        GastoHogar.addActionListener(this::GastoHogarActionPerformed);
 
-        jRadioButton2.setSelected(true);
-        jRadioButton2.setText("Gasto personal");
-        jRadioButton2.addActionListener(this::jRadioButton2ActionPerformed);
+        buttonGroup1.add(GastoPersonal);
+        GastoPersonal.setText("Gasto personal");
+        GastoPersonal.addActionListener(this::GastoPersonalActionPerformed);
 
-        jTextField1.setText("$");
+        ValorPagado.setText("$");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -196,13 +211,13 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(54, 54, 54)
-                        .addComponent(jTextField1))
+                        .addComponent(ValorPagado))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(92, 92, 92)
-                        .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(GastoHogar, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
-                        .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(GastoPersonal, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(28, 28, 28))
         );
         jPanel2Layout.setVerticalGroup(
@@ -211,22 +226,23 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
+                    .addComponent(GastoHogar)
+                    .addComponent(GastoPersonal))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ValorPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(10, Short.MAX_VALUE))
         );
 
-        jButton1.setBackground(new java.awt.Color(102, 153, 255));
-        jButton1.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
-        jButton1.setText("Anterior");
+        btnAnterior.setBackground(new java.awt.Color(102, 153, 255));
+        btnAnterior.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        btnAnterior.setText("Anterior");
 
-        jButton2.setBackground(new java.awt.Color(255, 153, 0));
-        jButton2.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
-        jButton2.setText("Guardar gasto");
+        btGuardar.setBackground(new java.awt.Color(255, 153, 0));
+        btGuardar.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        btGuardar.setText("Guardar gasto");
+        btGuardar.addActionListener(this::btGuardarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -245,9 +261,9 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
                                 .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(183, 183, 183)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(39, 39, 39)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -264,21 +280,141 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 9, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+    private void GastoHogarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GastoHogarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+    }//GEN-LAST:event_GastoHogarActionPerformed
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+    private void GastoPersonalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GastoPersonalActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+    }//GEN-LAST:event_GastoPersonalActionPerformed
+
+    private void btGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btGuardarActionPerformed
+        // TODO add your handling code here:
+ // Obtener datos del formulario
+    String forma = FormaAdquisicion.getSelectedItem().toString();
+    String lugar = LugarCompra.getSelectedItem().toString();
+    String valorTexto = ValorPagado.getText().trim();
+
+    // Validar forma de adquisición
+    if (FormaAdquisicion.getSelectedIndex() == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Seleccione la forma de adquisición");
+        return;
+    }
+
+    // Validar frecuencia solo si seleccionó Compra
+    if (forma.equals("Compra")
+            && FrecuenciaCompra.getSelectedIndex() == 0) {
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Seleccione la frecuencia de compra");
+        return;
+    }
+
+    // Validar lugar de compra
+    if (LugarCompra.getSelectedIndex() == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Seleccione el lugar de compra u obtención");
+        return;
+    }
+
+    // Validar tipo de gasto
+    if (!GastoHogar.isSelected() && !GastoPersonal.isSelected()) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Debe seleccionar el tipo de gasto");
+        return;
+    }
+
+    // Validar valor pagado o estimado
+    if (valorTexto.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Ingrese el valor pagado o estimado");
+        return;
+    }
+
+    double valor;
+
+    try {
+        valor = Double.parseDouble(valorTexto.replace(",", "."));
+
+        if (!Double.isFinite(valor) || valor < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Ingrese un valor válido");
+            return;
+        }
+
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "El valor debe ser numérico");
+        return;
+    }
+
+    // Verificar que llegaron los datos del alimento
+    if (gastoActual == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se encontró la información del alimento");
+        return;
+    }
+
+    // Completar la información del gasto
+    gastoActual.formaAdquisicion = forma;
+
+    // Registrar frecuencia solamente cuando es Compra
+    if (forma.equals("Compra")) {
+        gastoActual.frecuenciaCompra =
+                FrecuenciaCompra.getSelectedItem().toString();
+    } else {
+        gastoActual.frecuenciaCompra = "No aplica";
+    }
+
+    // Guardar lugar de adquisición
+    gastoActual.lugarCompra = lugar;
+
+    // Guardar tipo de gasto
+    if (GastoHogar.isSelected()) {
+        gastoActual.tipoGasto = "Gasto del hogar";
+    } else {
+        gastoActual.tipoGasto = "Gasto personal";
+    }
+
+    // Guardar valor pagado o estimado
+    gastoActual.valorPagado = valor;
+
+    // Registrar el gasto en la lista temporal
+    RegistroGastos.guardar(gastoActual);
+
+    // Mostrar confirmación
+    javax.swing.JOptionPane.showMessageDialog(this,
+            "Gasto registrado correctamente");
+
+    // Regresar al menú principal
+    MenuPrincipal menu = new MenuPrincipal();
+    menu.setLocationRelativeTo(null);
+    menu.setVisible(true);
+
+    // Cerrar el formulario actual
+    this.dispose();
+    }//GEN-LAST:event_btGuardarActionPerformed
+
+    private void FormaAdquisicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FormaAdquisicionActionPerformed
+        // TODO add your handling code here:
+         String forma = FormaAdquisicion.getSelectedItem().toString();
+
+    if (forma.equals("Compra")) {
+        FrecuenciaCompra.setEnabled(true);
+    } else {
+        FrecuenciaCompra.setSelectedIndex(0);
+        FrecuenciaCompra.setEnabled(false);
+    }
+    }//GEN-LAST:event_FormaAdquisicionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -306,11 +442,15 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JComboBox<String> FormaAdquisicion;
+    private javax.swing.JComboBox<String> FrecuenciaCompra;
+    private javax.swing.JRadioButton GastoHogar;
+    private javax.swing.JRadioButton GastoPersonal;
+    private javax.swing.JComboBox<String> LugarCompra;
+    private javax.swing.JTextField ValorPagado;
+    private javax.swing.JButton btGuardar;
+    private javax.swing.JButton btnAnterior;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -326,8 +466,5 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

@@ -16,6 +16,25 @@ public class RegistrarVisita extends javax.swing.JFrame {
      */
     public RegistrarVisita() {
         initComponents();
+        
+     // Centrar la ventana
+    setLocationRelativeTo(null);
+
+    // Número de visita provisional
+    LbNumerovista.setText("1");
+
+    // Obtener la fecha actual del sistema
+    java.time.LocalDate fechaActual =
+            java.time.LocalDate.now();
+
+    // Formato de fecha
+    java.time.format.DateTimeFormatter formatoFecha =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    // Mostrar la fecha automáticamente
+    JlFechaVisita.setText(fechaActual.format(formatoFecha));
+
+
     }
 
     /**
@@ -33,23 +52,22 @@ public class RegistrarVisita extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        volver = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        NúmeroVIista = new javax.swing.JLabel();
+        Fecha = new javax.swing.JLabel();
+        HoraI = new javax.swing.JLabel();
+        Horaf = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jSeparator1 = new javax.swing.JSeparator();
+        Horainicio = new javax.swing.JLabel();
+        Horafin = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jLabel10 = new javax.swing.JLabel();
+        LbNumerovista = new javax.swing.JLabel();
+        JlFechaVisita = new javax.swing.JLabel();
+        iniciar = new javax.swing.JButton();
+        Finalizar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -80,7 +98,7 @@ public class RegistrarVisita extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 297, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -105,26 +123,27 @@ public class RegistrarVisita extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Arial", 1, 28)); // NOI18N
         jLabel5.setText("Registrar visita");
 
-        jButton1.setText("Volver");
+        volver.setText("Volver");
+        volver.addActionListener(this::volverActionPerformed);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), null));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
-        jLabel6.setText("Número de visita:");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 7, 138, -1));
+        NúmeroVIista.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        NúmeroVIista.setText("Número de visita:");
+        jPanel1.add(NúmeroVIista, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 7, 138, -1));
 
-        jLabel7.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
-        jLabel7.setText("Fecha de visita:");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 138, -1));
+        Fecha.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        Fecha.setText("Fecha de visita:");
+        jPanel1.add(Fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 138, -1));
 
-        jLabel8.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
-        jLabel8.setText("Hora inicio:");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 138, 20));
+        HoraI.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        HoraI.setText("Hora inicio:");
+        jPanel1.add(HoraI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 138, 20));
 
-        jLabel9.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
-        jLabel9.setText("Hora fin:");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 138, -1));
+        Horaf.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        Horaf.setText("Hora fin:");
+        jPanel1.add(Horaf, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 80, -1));
 
         jSeparator2.setBackground(new java.awt.Color(133, 205, 255));
         jSeparator2.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
@@ -133,33 +152,34 @@ public class RegistrarVisita extends javax.swing.JFrame {
         jSeparator1.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         jPanel1.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 330, 50));
 
+        Horainicio.setFont(new java.awt.Font("Segoe UI", 0, 19)); // NOI18N
+        jPanel1.add(Horainicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 220, 40));
+
+        Horafin.setFont(new java.awt.Font("Segoe UI", 0, 19)); // NOI18N
+        jPanel1.add(Horafin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 130, 230, 50));
+
         jSeparator3.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         jPanel1.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 330, 40));
 
         jSeparator4.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         jPanel1.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 130, 330, 50));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 0, 190, 40));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 40, 200, 50));
 
-        jLabel11.setText("Sistema");
-        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 220, 40));
+        LbNumerovista.setFont(new java.awt.Font("Segoe UI", 0, 19)); // NOI18N
+        jPanel1.add(LbNumerovista, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 0, 180, 40));
 
-        jLabel12.setText("Sistema");
-        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 250, 50));
+        JlFechaVisita.setFont(new java.awt.Font("Segoe UI", 0, 19)); // NOI18N
+        jPanel1.add(JlFechaVisita, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 40, 190, 50));
 
-        jButton2.setBackground(new java.awt.Color(102, 204, 0));
-        jButton2.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
-        jButton2.setText("Iniciar visita");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        iniciar.setBackground(new java.awt.Color(102, 204, 0));
+        iniciar.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        iniciar.setText("Iniciar visita");
+        iniciar.addActionListener(this::iniciarActionPerformed);
 
-        jButton3.setBackground(new java.awt.Color(102, 204, 0));
-        jButton3.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
-        jButton3.setText("Finalizar visita");
-        jButton3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton3.addActionListener(this::jButton3ActionPerformed);
-
-        jLabel10.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel10.setText("Visita finalizada correctamente");
+        Finalizar.setBackground(new java.awt.Color(102, 204, 0));
+        Finalizar.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        Finalizar.setText("Finalizar visita");
+        Finalizar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Finalizar.addActionListener(this::FinalizarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -170,49 +190,87 @@ public class RegistrarVisita extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(volver)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 453, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jButton1)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(iniciar, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(32, 32, 32)
+                                .addComponent(Finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 331, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap(171, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
-                .addComponent(jButton1)
+                .addComponent(volver)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
+                    .addComponent(iniciar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void iniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iniciarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        
+         // Obtener la hora actual del sistema
+        java.time.LocalTime hora=java.time.LocalTime.now();
+        // Establecer el formato de la hora
+        java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss a");
+         // Mostrar la hora donde dice Sistema
+        Horainicio.setText(hora.format(formato));
+         // Evitar que se cambie la hora registrada
+        iniciar.setEnabled(false);
+    }//GEN-LAST:event_iniciarActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void FinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FinalizarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+        if (iniciar.isEnabled()) {
+            javax.swing.JOptionPane.showMessageDialog(this,"Primero debe iniciar la visita");
+        return;
+    }
+
+    // Obtener la hora actual del sistema
+    java.time.LocalTime horaFin = java.time.LocalTime.now();
+
+    // Establecer el formato
+    java.time.format.DateTimeFormatter formato =
+            java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a");
+
+    // Mostrar la hora donde dice Sistema
+    Horafin.setText(horaFin.format(formato));
+
+    // Evitar que se vuelva a finalizar
+    Finalizar.setEnabled(false);
+
+    // Mostrar mensaje
+    javax.swing.JOptionPane.showMessageDialog(this,"Visita finalizada correctamente");
+    }//GEN-LAST:event_FinalizarActionPerformed
+
+    private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
+        // TODO add your handling code here:
+        
+        MenuPrincipal menu=new MenuPrincipal();
+        
+        menu.setLocationRelativeTo(null);
+        
+        menu.setVisible(true);
+        
+        this.dispose();
+    }//GEN-LAST:event_volverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -240,28 +298,27 @@ public class RegistrarVisita extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel Fecha;
+    private javax.swing.JButton Finalizar;
+    private javax.swing.JLabel HoraI;
+    private javax.swing.JLabel Horaf;
+    private javax.swing.JLabel Horafin;
+    private javax.swing.JLabel Horainicio;
+    private javax.swing.JLabel JlFechaVisita;
+    private javax.swing.JLabel LbNumerovista;
+    private javax.swing.JLabel NúmeroVIista;
+    private javax.swing.JButton iniciar;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JButton volver;
     // End of variables declaration//GEN-END:variables
 }

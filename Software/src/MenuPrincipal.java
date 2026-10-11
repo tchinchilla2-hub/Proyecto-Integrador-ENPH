@@ -16,6 +16,19 @@ public class MenuPrincipal extends javax.swing.JFrame {
      */
     public MenuPrincipal() {
         initComponents();
+       if (DatosRecoleccion.codigoHogar != null) {
+    jLabel5.setText(DatosRecoleccion.codigoHogar);
+    } else {
+    jLabel5.setText("Sin asignar");
+    } 
+       // Calcular el día actual de la encuesta
+    long dia = DatosRecoleccion.obtenerDiaActual();
+
+    if (dia >= 1 && dia <= 14) {
+        jLabel6.setText("Día actual de la encuesta: " + dia + "/14");
+    } else {
+        jLabel6.setText("Día actual de la encuesta: Sin iniciar");
+    }
     }
 
     /**
@@ -37,10 +50,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        Registrarvisita = new javax.swing.JButton();
+        Gastosdiarios = new javax.swing.JButton();
+        Historial = new javax.swing.JButton();
+        FinalizarRecoleccion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -101,30 +114,32 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
         jLabel6.setText("Día actual de la encuesta:");
 
-        jButton1.setBackground(new java.awt.Color(168, 221, 215));
-        jButton1.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
-        jButton1.setText("Registrar visita");
-        jButton1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 255), 2, true));
-        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Registrarvisita.setBackground(new java.awt.Color(168, 221, 215));
+        Registrarvisita.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
+        Registrarvisita.setText("Registrar visita");
+        Registrarvisita.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 255), 2, true));
+        Registrarvisita.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Registrarvisita.addActionListener(this::RegistrarvisitaActionPerformed);
 
-        jButton2.setBackground(new java.awt.Color(255, 181, 86));
-        jButton2.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
-        jButton2.setText("Registrar gastos diarios");
-        jButton2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 51, 0), 2, true));
-        jButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        Gastosdiarios.setBackground(new java.awt.Color(255, 181, 86));
+        Gastosdiarios.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
+        Gastosdiarios.setText("Registrar gastos diarios");
+        Gastosdiarios.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 51, 0), 2, true));
+        Gastosdiarios.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Gastosdiarios.addActionListener(this::GastosdiariosActionPerformed);
 
-        jButton3.setBackground(new java.awt.Color(192, 232, 135));
-        jButton3.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
-        jButton3.setText("Historial de gastos");
-        jButton3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 51), 2, true));
-        jButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jButton3.addActionListener(this::jButton3ActionPerformed);
+        Historial.setBackground(new java.awt.Color(192, 232, 135));
+        Historial.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
+        Historial.setText("Historial de gastos");
+        Historial.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 51), 2, true));
+        Historial.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Historial.addActionListener(this::HistorialActionPerformed);
 
-        jButton4.setBackground(new java.awt.Color(102, 204, 255));
-        jButton4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jButton4.setText("Finalizar recolección");
-        jButton4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(153, 0, 153), new java.awt.Color(153, 0, 153), null, null));
+        FinalizarRecoleccion.setBackground(new java.awt.Color(102, 204, 255));
+        FinalizarRecoleccion.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        FinalizarRecoleccion.setText("Finalizar recolección");
+        FinalizarRecoleccion.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(153, 0, 153), new java.awt.Color(153, 0, 153), null, null));
+        FinalizarRecoleccion.addActionListener(this::FinalizarRecoleccionActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -134,13 +149,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(Gastosdiarios, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+                    .addComponent(Registrarvisita, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(Historial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(FinalizarRecoleccion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(15, 15, 15))
         );
         jPanel1Layout.setVerticalGroup(
@@ -152,13 +167,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Registrarvisita, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Gastosdiarios, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Historial, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(FinalizarRecoleccion, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 38, Short.MAX_VALUE))
         );
 
@@ -167,9 +182,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(144, 144, 144)
+                .addGap(161, 161, 161)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(469, Short.MAX_VALUE))
+                .addContainerGap(399, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -182,13 +197,63 @@ public class MenuPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void GastosdiariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GastosdiariosActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        InformacionAlimentosAdquirido ventana = new InformacionAlimentosAdquirido();
+        //Centrar la ventana
+        ventana.setLocationRelativeTo(null);
+        //Mostra el formulario de alimentos
+        ventana.setVisible(true);
+        
+        //Cerrar el menú principal
+        this.dispose();
+    }//GEN-LAST:event_GastosdiariosActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void HistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HistorialActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+        HistorialGastosDiarios ventana = new HistorialGastosDiarios();
+        //Centrar la ventana
+        ventana.setLocationRelativeTo(null);
+        //Mostra el formulario de alimentos
+        ventana.setVisible(true);
+        
+        //Cerrar el menú principal
+        this.dispose();
+    }//GEN-LAST:event_HistorialActionPerformed
+
+    private void RegistrarvisitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegistrarvisitaActionPerformed
+        // TODO add your handling code here:
+        javax.swing.JOptionPane.showMessageDialog(this, "Accediendo al registro de visitas");
+        RegistrarVisita ventana = new RegistrarVisita();
+        ventana.setLocationRelativeTo(null);
+        ventana.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_RegistrarvisitaActionPerformed
+
+    private void FinalizarRecoleccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FinalizarRecoleccionActionPerformed
+        // TODO add your handling code here:
+      int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "¿Desea finalizar la recolección del hogar?",
+            "Confirmar finalización",
+            javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Se solicitó finalizar la recolección"
+        );
+
+        GenerarScript ventana = new GenerarScript();
+
+        ventana.setLocationRelativeTo(null);
+        ventana.setVisible(true);
+
+        this.dispose();
+    }
+    }//GEN-LAST:event_FinalizarRecoleccionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -216,12 +281,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton FinalizarRecoleccion;
+    private javax.swing.JButton Gastosdiarios;
+    private javax.swing.JButton Historial;
+    private javax.swing.JButton Registrarvisita;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

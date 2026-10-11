@@ -14,8 +14,65 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
     /**
      * Creates new form HistorialGastosDiarios
      */
+    
+ private void cargarHistorial() {
+
+    javax.swing.table.DefaultTableModel modelo =
+            new javax.swing.table.DefaultTableModel(
+                    new Object[]{
+                        "Fecha",
+                        "Número de gastos",
+                        "Estado día",
+                        "Ver detalle"
+                    }, 0) {
+
+                @Override
+                public boolean isCellEditable(int fila, int columna) {
+                    return false;
+                }
+            };
+
+    // Agrupar los gastos por fecha
+    java.util.Map<java.time.LocalDate, Integer> gastosPorFecha =
+            new java.util.TreeMap<>();
+
+    for (GastoDiario gasto : RegistroGastos.gastos) {
+
+        if (gasto.fecha != null) {
+            gastosPorFecha.merge(gasto.fecha, 1, Integer::sum);
+        }
+    }
+
+    // Formato de fecha
+    java.time.format.DateTimeFormatter formato =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    // Agregar las fechas a la tabla
+    for (java.util.Map.Entry<java.time.LocalDate, Integer> registro
+            : gastosPorFecha.entrySet()) {
+
+        // Consultar si el día ya fue confirmado
+        String estado = RegistroGastos.estaConfirmado(registro.getKey())
+                ? "Confirmado"
+                : "Pendiente";
+
+        modelo.addRow(new Object[]{
+            registro.getKey().format(formato),
+            registro.getValue(),
+            estado,
+            "Ver detalle"
+        });
+    }
+
+    // Mostrar los registros en la tabla
+    tablaHistorial.setModel(modelo);
+}
     public HistorialGastosDiarios() {
         initComponents();
+        
+        setLocationRelativeTo(null);
+
+        cargarHistorial();
     }
 
     /**
@@ -33,9 +90,9 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        Volver = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaHistorial = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -90,9 +147,10 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Arial", 1, 28)); // NOI18N
         jLabel10.setText("Historial de gastos diarios");
 
-        jButton2.setText("Volver");
+        Volver.setText("Volver");
+        Volver.addActionListener(this::VolverActionPerformed);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaHistorial.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -100,10 +158,15 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Fecha", "Número de gastos", "Estado día", "Detalle"
+                "Fecha", "Número de gastos", "Estado día", "Ver detalle"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tablaHistorial.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaHistorialMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tablaHistorial);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -114,7 +177,7 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton2))
+                        .addComponent(Volver))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -127,7 +190,7 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17)
-                .addComponent(jButton2)
+                .addComponent(Volver)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addGap(18, 18, 18)
@@ -138,6 +201,43 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void VolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolverActionPerformed
+        // TODO add your handling code here:
+        MenuPrincipal menu = new MenuPrincipal();
+
+    menu.setLocationRelativeTo(null);
+    menu.setVisible(true);
+
+    this.dispose();
+    }//GEN-LAST:event_VolverActionPerformed
+
+    private void tablaHistorialMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaHistorialMouseClicked
+        // TODO add your handling code here:
+        int fila = tablaHistorial.rowAtPoint(evt.getPoint());
+int columna = tablaHistorial.columnAtPoint(evt.getPoint());
+
+// Comprobar que hizo clic en Ver detalle
+if (fila >= 0 && columna == 3) {
+
+    // Obtener la fecha de la fila seleccionada
+    String fechaTexto = tablaHistorial.getValueAt(fila, 0).toString();
+
+    java.time.format.DateTimeFormatter formato =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    java.time.LocalDate fecha =
+            java.time.LocalDate.parse(fechaTexto, formato);
+
+    // Abrir la pantalla de detalles
+    DetalleGastosDiarios ventana =
+            new DetalleGastosDiarios(fecha);
+
+    ventana.setLocationRelativeTo(null);
+    ventana.setVisible(true);
+
+    this.dispose();
+    }//GEN-LAST:event_tablaHistorialMouseClicked
+}   
     /**
      * @param args the command line arguments
      */
@@ -164,7 +264,7 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton Volver;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -172,6 +272,6 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tablaHistorial;
     // End of variables declaration//GEN-END:variables
 }

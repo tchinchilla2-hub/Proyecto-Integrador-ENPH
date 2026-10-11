@@ -8,7 +8,8 @@
  * @author thain
  */
 public class DetalleGastosDiarios extends javax.swing.JFrame {
-    
+    private java.time.LocalDate fechaSeleccionada;
+    private GastoDiario gastoEnEdicion;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DetalleGastosDiarios.class.getName());
 
     /**
@@ -16,8 +17,162 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
      */
     public DetalleGastosDiarios() {
         initComponents();
+        jDialog1.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    }
+   
+    //SEGUNDO CONSTRUCTOR
+    public DetalleGastosDiarios(java.time.LocalDate fecha) {
+    this();
+
+    this.fechaSeleccionada = fecha;
+    cargarGastos();
+    }
+    
+    //METODO PARA CARGAR LOS GASTOS DE LA FECHA
+    private void cargarGastos() {
+
+    javax.swing.table.DefaultTableModel modelo =
+            new javax.swing.table.DefaultTableModel(
+                    new Object[]{
+                        "Nº", "Alimento", "Cantidad", "Unidad",
+                        "Equivalencia (g / cm³)",
+                        "Forma de adquisición", "Lugar",
+                        "Frecuencia de compra", "Tipo de gasto",
+                        "Valor", "Revisado", "Editar"
+                    }, 0) {
+
+                @Override
+                public Class<?> getColumnClass(int columna) {
+                    if (columna == 10) {
+                        return Boolean.class;
+                    }
+                    return Object.class;
+                }
+
+                @Override
+                public boolean isCellEditable(int fila, int columna) {
+                    return columna == 10;
+                }
+            };
+
+    java.time.format.DateTimeFormatter formato =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    Fecha.setText(fechaSeleccionada.format(formato));
+
+    int numero = 1;
+
+    for (GastoDiario gasto : RegistroGastos.gastos) {
+
+        if (fechaSeleccionada.equals(gasto.fecha)) {
+
+            modelo.addRow(new Object[]{
+                numero,
+                gasto.nombreAlimento,
+                gasto.cantidad,
+                gasto.unidadMedida,
+                "Pendiente de cálculo",
+                gasto.formaAdquisicion,
+                gasto.lugarCompra,
+                gasto.frecuenciaCompra,
+                gasto.tipoGasto,
+                gasto.valorPagado,
+                false,
+                "Editar"
+            });
+
+            numero++;
+        }
     }
 
+    jTable1.setModel(modelo);
+
+    // Deshabilitar inicialmente la confirmación
+    jButton1.setEnabled(false);
+
+    // Detectar cambios en las casillas
+    modelo.addTableModelListener(e -> verificarGastos());
+}
+private void verificarGastos() {
+
+    int totalFilas = jTable1.getRowCount();
+
+    if (totalFilas == 0) {
+        jButton1.setEnabled(false);
+        return;
+    }
+
+    boolean todosMarcados = true;
+
+    for (int i = 0; i < totalFilas; i++) {
+
+        Boolean marcado =
+                (Boolean) jTable1.getValueAt(i, 10);
+
+        if (!Boolean.TRUE.equals(marcado)) {
+            todosMarcados = false;
+            break;
+        }
+    }
+
+    jButton1.setEnabled(todosMarcados);
+}
+
+private void abrirEditarGasto(int fila) {
+
+    gastoEnEdicion = null;
+    // Buscar el gasto correspondiente a la fila
+    int numero = 0;
+ 
+    for (GastoDiario gasto : RegistroGastos.gastos) {
+
+        if (fechaSeleccionada.equals(gasto.fecha)) {
+
+            if (numero == fila) {
+                gastoEnEdicion = gasto;
+                break;
+            }
+
+            numero++;
+        }
+    }
+
+    if (gastoEnEdicion == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se encontró el gasto seleccionado");
+        return;
+    }
+
+    // Mostrar los datos del gasto
+    jTextField1.setText(gastoEnEdicion.nombreAlimento);
+    jTextField2.setText(
+            String.valueOf(gastoEnEdicion.cantidad));
+    jTextField4.setText(
+            String.valueOf(gastoEnEdicion.valorPagado));
+
+    jComboBox1.setSelectedItem(gastoEnEdicion.unidadMedida);
+
+    jTextField3.setText(
+            gastoEnEdicion.contenidoUnidad > 0
+                    ? String.valueOf(gastoEnEdicion.contenidoUnidad)
+                    : "");
+
+    if (gastoEnEdicion.unidadContenido != null) {
+        jComboBox2.setSelectedItem(gastoEnEdicion.unidadContenido);
+    }
+
+    // Habilitar presentación solo cuando sea Unidad
+    boolean esUnidad =
+            "Unidad".equals(gastoEnEdicion.unidadMedida);
+
+    jTextField3.setEnabled(esUnidad);
+    jComboBox2.setEnabled(esUnidad);
+
+    // Abrir ventana emergente
+    jDialog1.pack();
+    jDialog1.setLocationRelativeTo(this);
+    jDialog1.setVisible(true);
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -56,7 +211,7 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jLabel9 = new javax.swing.JLabel();
+        Fecha = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
 
@@ -82,8 +237,10 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
         jTextField4.setToolTipText("");
 
         jButton3.setText("X");
+        jButton3.addActionListener(this::jButton3ActionPerformed);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una unidad", "Unidad", "Centímetros cúbicos", "Litro", "Gramos", "Onzas", "Libra", "Kilo", "Arroba" }));
+        jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
 
         jLabel13.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel13.setText("Presentación por unidad (opcional)");
@@ -98,9 +255,7 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
         jLabel16.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel16.setText("Unidad de medida");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jTextField3.setText("jTextField3");
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una unidad", "Gramos", "Mililitros", "Centímetros cúbicos" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -290,11 +445,15 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
                 "Nº", "Alimento", "Cantidad", "Unidad", "Equivalencia (g / cm³)", "Forma de Adquisición", "Lugar", "Frecuencia de compra", "Tipo de gasto", "Valor", "Acción"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
-        jLabel9.setFont(new java.awt.Font("Arial", 1, 28)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel9.setText("Fecha");
+        Fecha.setFont(new java.awt.Font("Arial", 1, 28)); // NOI18N
+        Fecha.setText("Fecha");
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel1.setText("Marque todos los gastos para habilitar la confirmación.");
@@ -302,18 +461,12 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(255, 153, 153));
         jButton1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jButton1.setText("Confirmar gastos del día");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -321,6 +474,13 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(83, 83, 83))
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 701, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2)
+                    .addComponent(Fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -329,7 +489,7 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2)
                 .addGap(1, 1, 1)
-                .addComponent(jLabel9)
+                .addComponent(Fecha)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -344,15 +504,229 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
+        jDialog1.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        HistorialGastosDiarios ventana = new HistorialGastosDiarios();
+
+    ventana.setLocationRelativeTo(null);
+    ventana.setVisible(true);
+
+    this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
+         // Verificar que exista un gasto seleccionado
+    if (gastoEnEdicion == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se encontró el gasto seleccionado");
+        return;
+    }
+
+    // Obtener los datos modificados
+    String nombre = jTextField1.getText().trim();
+    String cantidadTexto = jTextField2.getText().trim();
+    String valorTexto = jTextField4.getText().trim();
+
+    // Validar campos obligatorios
+    if (nombre.isEmpty() || cantidadTexto.isEmpty()
+            || valorTexto.isEmpty()
+            || jComboBox1.getSelectedIndex() == 0) {
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Debe completar los campos obligatorios");
+        return;
+    }
+
+    double cantidad;
+    double valor;
+
+    try {
+        cantidad = Double.parseDouble(
+                cantidadTexto.replace(",", "."));
+
+        valor = Double.parseDouble(
+                valorTexto.replace(",", "."));
+
+        if (!Double.isFinite(cantidad) || cantidad <= 0
+                || !Double.isFinite(valor) || valor < 0) {
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Ingrese una cantidad y un valor válidos");
+            return;
+        }
+
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "La cantidad y el valor deben ser numéricos");
+        return;
+    }
+
+    // Obtener unidad seleccionada
+    String unidad = jComboBox1.getSelectedItem().toString();
+
+    double contenido = 0;
+    String unidadContenido = null;
+
+    // Validar presentación por unidad cuando corresponda
+    if (unidad.equals("Unidad")) {
+
+        String contenidoTexto = jTextField3.getText().trim();
+
+        if (!contenidoTexto.isEmpty()) {
+
+            try {
+                contenido = Double.parseDouble(
+                        contenidoTexto.replace(",", "."));
+
+                if (!Double.isFinite(contenido) || contenido <= 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this,
+                            "El contenido debe ser mayor que cero");
+                    return;
+                }
+
+            } catch (NumberFormatException e) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Ingrese un contenido válido");
+                return;
+            }
+
+            if (jComboBox2.getSelectedIndex() == 0) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Seleccione la unidad del contenido");
+                return;
+            }
+
+            unidadContenido =
+                    jComboBox2.getSelectedItem().toString();
+
+        } else if (jComboBox2.getSelectedIndex() != 0) {
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Ingrese el contenido por unidad");
+            return;
+        }
+    }
+
+    // Actualizar el gasto original
+    gastoEnEdicion.nombreAlimento = nombre;
+    gastoEnEdicion.cantidad = cantidad;
+    gastoEnEdicion.unidadMedida = unidad;
+    gastoEnEdicion.valorPagado = valor;
+    gastoEnEdicion.contenidoUnidad = contenido;
+    gastoEnEdicion.unidadContenido = unidadContenido;
+
+    // Actualizar la tabla
+    cargarGastos();
+
+    // Cerrar la ventana de edición
+    jDialog1.dispose();
+
+    // Mostrar confirmación
+    javax.swing.JOptionPane.showMessageDialog(this,
+            "Gasto actualizado correctamente");
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        int filaVista = jTable1.rowAtPoint(evt.getPoint());
+int columnaVista = jTable1.columnAtPoint(evt.getPoint());
+
+if (filaVista >= 0 && columnaVista >= 0) {
+
+    int columna = jTable1.convertColumnIndexToModel(columnaVista);
+
+    // Columna Editar
+    if (columna == 11) {
+
+        int fila = jTable1.convertRowIndexToModel(filaVista);
+
+        // Reiniciar el gasto seleccionado
+        gastoEnEdicion = null;
+
+        // Abrir ventana de edición
+        abrirEditarGasto(fila);
+    }
+}
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        // Verificar que existan gastos
+    if (jTable1.getRowCount() == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No hay gastos registrados para confirmar");
+        return;
+    }
+
+    // Guardar cualquier cambio pendiente en la tabla
+    if (jTable1.isEditing()) {
+        jTable1.getCellEditor().stopCellEditing();
+    }
+
+    // Verificar que todos estén marcados
+    for (int i = 0; i < jTable1.getRowCount(); i++) {
+
+        if (!Boolean.TRUE.equals(jTable1.getValueAt(i, 10))) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Debe revisar y marcar todos los gastos del día");
+            return;
+        }
+    }
+
+    // Solicitar confirmación
+    int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "¿Está seguro de que desea confirmar todos los gastos del día?",
+        "Confirmar gastos",
+        javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+
+    // Guardar estado confirmado
+    RegistroGastos.confirmarDia(fechaSeleccionada);
+
+    javax.swing.JOptionPane.showMessageDialog(this,
+            "Gastos del día confirmados correctamente");
+
+    // Regresar al historial
+    HistorialGastosDiarios ventana =
+            new HistorialGastosDiarios();
+
+    ventana.setLocationRelativeTo(null);
+    ventana.setVisible(true);
+
+    this.dispose();
+    }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+        String unidad = jComboBox1.getSelectedItem().toString();
+
+    if (unidad.equals("Unidad")) {
+
+        jTextField3.setEnabled(true);
+        jComboBox2.setEnabled(true);
+
+    } else {
+
+        jTextField3.setText("");
+        jTextField3.setEnabled(false);
+
+        jComboBox2.setSelectedIndex(0);
+        jComboBox2.setEnabled(false);
+    }
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        jDialog1.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -380,6 +754,7 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Fecha;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -403,7 +778,6 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
