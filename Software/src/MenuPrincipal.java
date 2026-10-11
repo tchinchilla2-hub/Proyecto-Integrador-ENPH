@@ -104,23 +104,27 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(168, 221, 215));
         jButton1.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
         jButton1.setText("Registrar visita");
+        jButton1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 255), 2, true));
         jButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 
         jButton2.setBackground(new java.awt.Color(255, 181, 86));
         jButton2.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
         jButton2.setText("Registrar gastos diarios");
+        jButton2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 51, 0), 2, true));
         jButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
         jButton3.setBackground(new java.awt.Color(192, 232, 135));
         jButton3.setFont(new java.awt.Font("Arial", 1, 25)); // NOI18N
         jButton3.setText("Historial de gastos");
+        jButton3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 51), 2, true));
         jButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jButton3.addActionListener(this::jButton3ActionPerformed);
 
         jButton4.setBackground(new java.awt.Color(102, 204, 255));
         jButton4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jButton4.setText("Finalizar recolección");
+        jButton4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(153, 0, 153), new java.awt.Color(153, 0, 153), null, null));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
