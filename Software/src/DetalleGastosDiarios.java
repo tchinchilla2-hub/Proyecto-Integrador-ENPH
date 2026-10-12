@@ -10,6 +10,10 @@
 public class DetalleGastosDiarios extends javax.swing.JFrame {
     private java.time.LocalDate fechaSeleccionada;
     private GastoDiario gastoEnEdicion;
+    private final java.util.List<Integer> idsGastos =
+        new java.util.ArrayList<>();
+
+private Integer idGastoEnEdicion;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DetalleGastosDiarios.class.getName());
 
     /**
@@ -29,7 +33,8 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
     }
     
     //METODO PARA CARGAR LOS GASTOS DE LA FECHA
-    private void cargarGastos() {
+ private void cargarGastos() {
+     idsGastos.clear();
 
     javax.swing.table.DefaultTableModel modelo =
             new javax.swing.table.DefaultTableModel(
@@ -49,49 +54,156 @@ public class DetalleGastosDiarios extends javax.swing.JFrame {
                     return Object.class;
                 }
 
-                @Override
+               @Override
                 public boolean isCellEditable(int fila, int columna) {
                     return columna == 10;
                 }
             };
 
+    // Mostrar la fecha seleccionada
+    if (fechaSeleccionada == null) {
+        jTable1.setModel(modelo);
+        jButton1.setEnabled(false);
+        return;
+    }
+
     java.time.format.DateTimeFormatter formato =
-            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            java.time.format.DateTimeFormatter
+                    .ofPattern("dd/MM/yyyy");
 
     Fecha.setText(fechaSeleccionada.format(formato));
 
-    int numero = 1;
+    // Identificar el hogar que inició sesión
+    String codigoHogar = DatosRecoleccion.codigoHogar;
 
-    for (GastoDiario gasto : RegistroGastos.gastos) {
+    if (codigoHogar == null
+            || !codigoHogar.matches("HG-\\d+")) {
 
-        if (fechaSeleccionada.equals(gasto.fecha)) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se ha identificado el hogar");
 
-            modelo.addRow(new Object[]{
-                numero,
-                gasto.nombreAlimento,
-                gasto.cantidad,
-                gasto.unidadMedida,
-                "Pendiente de cálculo",
-                gasto.formaAdquisicion,
-                gasto.lugarCompra,
-                gasto.frecuenciaCompra,
-                gasto.tipoGasto,
-                gasto.valorPagado,
-                false,
-                "Editar"
-            });
-
-            numero++;
-        }
+        jTable1.setModel(modelo);
+        jButton1.setEnabled(false);
+        return;
     }
 
+    int idHogar = Integer.parseInt(
+            codigoHogar.substring(3));
+
+    // Consultar los gastos y sus catálogos en Oracle
+    String sql =
+        "SELECT g.id AS id_gasto, g.numero_orden, "
+            + "g.nombre_alimento_bebida, "
+            + "g.cantidad, "
+            + "um.nombre AS unidad, "
+            + "g.contenido_por_unidad, "
+            + "uc.nombre AS unidad_contenido, "
+            + "fa.nombre AS forma, "
+            + "la.nombre AS lugar, "
+            + "fc.nombre AS frecuencia, "
+            + "tg.nombre AS tipo, "
+            + "g.valor_pagado_estimado, "
+            + "g.estado_revision "
+            + "FROM GASTO_DIARIO g "
+            + "JOIN ENCUESTA e "
+            + "ON g.id_encuesta = e.id "
+            + "LEFT JOIN UNIDAD_MEDIDA um "
+            + "ON g.id_unidad_medida = um.id "
+            + "LEFT JOIN UNIDAD_CONTENIDO uc "
+            + "ON g.id_unidad_contenido = uc.id "
+            + "LEFT JOIN FORMA_ADQUISICION fa "
+            + "ON g.id_forma_adquisicion = fa.id "
+            + "LEFT JOIN LUGAR_ADQUISICION la "
+            + "ON g.id_lugar_adquisicion = la.id "
+            + "LEFT JOIN FRECUENCIA_COMPRA fc "
+            + "ON g.id_frecuencia_compra = fc.id "
+            + "LEFT JOIN TIPO_GASTO tg "
+            + "ON g.id_tipo_gasto = tg.id "
+            + "WHERE e.id_hogar = ? "
+            + "AND TRUNC(g.fecha_gasto) = ? "
+            + "ORDER BY g.numero_orden, g.id";
+
+    java.sql.Connection conexion =
+            ConexionOracle.obtenerConexion();
+
+    if (conexion == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se pudo conectar con Oracle");
+
+        jTable1.setModel(modelo);
+        jButton1.setEnabled(false);
+        return;
+    }
+
+    try (conexion;
+         java.sql.PreparedStatement ps =
+                 conexion.prepareStatement(sql)) {
+
+        ps.setInt(1, idHogar);
+        ps.setDate(2,
+                java.sql.Date.valueOf(fechaSeleccionada));
+
+        try (java.sql.ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                idsGastos.add(rs.getInt("id_gasto"));
+
+                // Presentación por unidad, cuando exista
+                String equivalencia = "";
+
+                double contenido =
+                        rs.getDouble("contenido_por_unidad");
+
+                if (!rs.wasNull()) {
+                    String unidadContenido =
+                            rs.getString("unidad_contenido");
+
+                    equivalencia = contenido + " "
+                            + (unidadContenido == null
+                                    ? "" : unidadContenido);
+                }
+
+                String frecuencia =
+                        rs.getString("frecuencia");
+
+                if (frecuencia == null) {
+                    frecuencia = "No aplica";
+                }
+
+                boolean revisado = "Confirmado".equalsIgnoreCase(
+                        rs.getString("estado_revision"));
+
+                modelo.addRow(new Object[]{
+                    rs.getInt("numero_orden"),
+                    rs.getString("nombre_alimento_bebida"),
+                    rs.getDouble("cantidad"),
+                    rs.getString("unidad"),
+                    equivalencia,
+                    rs.getString("forma"),
+                    rs.getString("lugar"),
+                    frecuencia,
+                    rs.getString("tipo"),
+                    rs.getDouble("valor_pagado_estimado"),
+                    revisado,
+                    "Editar"
+                });
+            }
+        }
+
+    } catch (java.sql.SQLException e) {
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Error al consultar los gastos: "
+                + e.getMessage());
+    }
+
+    // Mostrar los datos recuperados desde Oracle
     jTable1.setModel(modelo);
 
-    // Deshabilitar inicialmente la confirmación
-    jButton1.setEnabled(false);
+    // Verificar si todos los gastos están marcados
+  modelo.addTableModelListener(e -> verificarGastos());
 
-    // Detectar cambios en las casillas
-    modelo.addTableModelListener(e -> verificarGastos());
+  verificarGastos();
 }
 private void verificarGastos() {
 
@@ -120,58 +232,115 @@ private void verificarGastos() {
 
 private void abrirEditarGasto(int fila) {
 
-    gastoEnEdicion = null;
-    // Buscar el gasto correspondiente a la fila
-    int numero = 0;
- 
-    for (GastoDiario gasto : RegistroGastos.gastos) {
-
-        if (fechaSeleccionada.equals(gasto.fecha)) {
-
-            if (numero == fila) {
-                gastoEnEdicion = gasto;
-                break;
-            }
-
-            numero++;
-        }
-    }
-
-    if (gastoEnEdicion == null) {
+    // Verificar que la fila tenga un gasto asociado
+    if (fila < 0 || fila >= idsGastos.size()) {
         javax.swing.JOptionPane.showMessageDialog(this,
                 "No se encontró el gasto seleccionado");
         return;
     }
 
-    // Mostrar los datos del gasto
-    jTextField1.setText(gastoEnEdicion.nombreAlimento);
-    jTextField2.setText(
-            String.valueOf(gastoEnEdicion.cantidad));
-    jTextField4.setText(
-            String.valueOf(gastoEnEdicion.valorPagado));
+    // Obtener el identificador real de Oracle
+    idGastoEnEdicion = idsGastos.get(fila);
 
-    jComboBox1.setSelectedItem(gastoEnEdicion.unidadMedida);
+    String sql =
+            "SELECT g.nombre_alimento_bebida, "
+            + "g.cantidad, "
+            + "g.valor_pagado_estimado, "
+            + "g.contenido_por_unidad, "
+            + "um.nombre AS unidad, "
+            + "uc.nombre AS unidad_contenido "
+            + "FROM GASTO_DIARIO g "
+            + "LEFT JOIN UNIDAD_MEDIDA um "
+            + "ON g.id_unidad_medida = um.id "
+            + "LEFT JOIN UNIDAD_CONTENIDO uc "
+            + "ON g.id_unidad_contenido = uc.id "
+            + "JOIN ENCUESTA e ON g.id_encuesta = e.id "
+            + "WHERE g.id = ? "
+            + "AND e.id_hogar = ?";
 
-    jTextField3.setText(
-            gastoEnEdicion.contenidoUnidad > 0
-                    ? String.valueOf(gastoEnEdicion.contenidoUnidad)
-                    : "");
+    String codigoHogar = DatosRecoleccion.codigoHogar;
 
-    if (gastoEnEdicion.unidadContenido != null) {
-        jComboBox2.setSelectedItem(gastoEnEdicion.unidadContenido);
+    if (codigoHogar == null
+            || !codigoHogar.matches("HG-\\d+")) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No hay un hogar identificado");
+        return;
     }
 
-    // Habilitar presentación solo cuando sea Unidad
-    boolean esUnidad =
-            "Unidad".equals(gastoEnEdicion.unidadMedida);
+    int idHogar = Integer.parseInt(codigoHogar.substring(3));
 
-    jTextField3.setEnabled(esUnidad);
-    jComboBox2.setEnabled(esUnidad);
+    java.sql.Connection conexion =
+            ConexionOracle.obtenerConexion();
 
-    // Abrir ventana emergente
-    jDialog1.pack();
-    jDialog1.setLocationRelativeTo(this);
-    jDialog1.setVisible(true);
+    if (conexion == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se pudo conectar con Oracle");
+        return;
+    }
+
+    try (conexion;
+         java.sql.PreparedStatement ps =
+                 conexion.prepareStatement(sql)) {
+
+        ps.setInt(1, idGastoEnEdicion);
+        ps.setInt(2, idHogar);
+
+        try (java.sql.ResultSet rs = ps.executeQuery()) {
+
+            if (!rs.next()) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "No se encontró el gasto en Oracle");
+                return;
+            }
+
+            // Cargar los datos en el formulario de edición
+            jTextField1.setText(
+                    rs.getString("nombre_alimento_bebida"));
+
+            jTextField2.setText(
+                    String.valueOf(rs.getDouble("cantidad")));
+
+            jTextField4.setText(
+                    String.valueOf(rs.getDouble(
+                            "valor_pagado_estimado")));
+
+            String unidad = rs.getString("unidad");
+            jComboBox1.setSelectedItem(unidad);
+
+            double contenido =
+                    rs.getDouble("contenido_por_unidad");
+
+            if (rs.wasNull()) {
+                jTextField3.setText("");
+            } else {
+                jTextField3.setText(
+                        String.valueOf(contenido));
+            }
+
+            String unidadContenido =
+                    rs.getString("unidad_contenido");
+
+            if (unidadContenido != null) {
+                jComboBox2.setSelectedItem(unidadContenido);
+            } else {
+                jComboBox2.setSelectedIndex(0);
+            }
+
+            boolean esUnidad = "Unidad".equals(unidad);
+
+            jTextField3.setEnabled(esUnidad);
+            jComboBox2.setEnabled(esUnidad);
+        }
+
+        // Mostrar la ventana emergente
+        jDialog1.pack();
+        jDialog1.setLocationRelativeTo(this);
+        jDialog1.setVisible(true);
+
+    } catch (java.sql.SQLException e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Error al consultar el gasto: " + e.getMessage());
+    }
 }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -631,26 +800,25 @@ private void abrirEditarGasto(int fila) {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
-        int filaVista = jTable1.rowAtPoint(evt.getPoint());
+
+// TODO add your handling code here:
+int filaVista = jTable1.rowAtPoint(evt.getPoint());
 int columnaVista = jTable1.columnAtPoint(evt.getPoint());
 
 if (filaVista >= 0 && columnaVista >= 0) {
 
-    int columna = jTable1.convertColumnIndexToModel(columnaVista);
+    int columna =
+            jTable1.convertColumnIndexToModel(columnaVista);
 
-    // Columna Editar
     if (columna == 11) {
 
-        int fila = jTable1.convertRowIndexToModel(filaVista);
+        int fila =
+                jTable1.convertRowIndexToModel(filaVista);
 
-        // Reiniciar el gasto seleccionado
-        gastoEnEdicion = null;
-
-        // Abrir ventana de edición
         abrirEditarGasto(fila);
     }
 }
+
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -687,20 +855,21 @@ if (filaVista >= 0 && columnaVista >= 0) {
 
     if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
 
-    // Guardar estado confirmado
-    RegistroGastos.confirmarDia(fechaSeleccionada);
+    // Confirmación temporal mientras conectamos Oracle
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Todos los gastos fueron revisados. "
+                + "Está pendiente guardar la confirmación en Oracle.");
 
-    javax.swing.JOptionPane.showMessageDialog(this,
-            "Gastos del día confirmados correctamente");
+        return;
 
     // Regresar al historial
-    HistorialGastosDiarios ventana =
-            new HistorialGastosDiarios();
+   // HistorialGastosDiarios ventana =
+      //      new HistorialGastosDiarios();
 
-    ventana.setLocationRelativeTo(null);
-    ventana.setVisible(true);
+    //ventana.setLocationRelativeTo(null);
+    //ventana.setVisible(true);
 
-    this.dispose();
+    //this.dispose();
     }
     }//GEN-LAST:event_jButton1ActionPerformed
 

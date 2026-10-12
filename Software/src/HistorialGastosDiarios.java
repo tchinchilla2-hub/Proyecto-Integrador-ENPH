@@ -14,8 +14,7 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
     /**
      * Creates new form HistorialGastosDiarios
      */
-    
- private void cargarHistorial() {
+    private void cargarHistorial() {
 
     javax.swing.table.DefaultTableModel modelo =
             new javax.swing.table.DefaultTableModel(
@@ -32,40 +31,86 @@ public class HistorialGastosDiarios extends javax.swing.JFrame {
                 }
             };
 
-    // Agrupar los gastos por fecha
-    java.util.Map<java.time.LocalDate, Integer> gastosPorFecha =
-            new java.util.TreeMap<>();
+    // Identificar el hogar que inició sesión
+    String codigoHogar = DatosRecoleccion.codigoHogar;
 
-    for (GastoDiario gasto : RegistroGastos.gastos) {
+    if (codigoHogar == null
+            || !codigoHogar.matches("HG-\\d+")) {
 
-        if (gasto.fecha != null) {
-            gastosPorFecha.merge(gasto.fecha, 1, Integer::sum);
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No hay un hogar identificado");
+
+        tablaHistorial.setModel(modelo);
+        return;
+    }
+
+    int idHogar = Integer.parseInt(codigoHogar.substring(3));
+
+    // Consultar los gastos del hogar directamente en Oracle
+    String sql =
+            "SELECT TRUNC(g.fecha_gasto) AS fecha, "
+            + "COUNT(*) AS total, "
+            + "SUM(CASE WHEN g.estado_revision = 'Confirmado' "
+            + "THEN 1 ELSE 0 END) AS confirmados "
+            + "FROM GASTO_DIARIO g "
+            + "JOIN ENCUESTA e ON g.id_encuesta = e.id "
+            + "WHERE e.id_hogar = ? "
+            + "GROUP BY TRUNC(g.fecha_gasto) "
+            + "ORDER BY fecha";
+
+    java.sql.Connection conexion =
+            ConexionOracle.obtenerConexion();
+
+    if (conexion == null) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se pudo conectar con Oracle");
+        tablaHistorial.setModel(modelo);
+        return;
+    }
+
+    try (conexion;
+         java.sql.PreparedStatement ps =
+                 conexion.prepareStatement(sql)) {
+
+        ps.setInt(1, idHogar);
+
+        try (java.sql.ResultSet rs = ps.executeQuery()) {
+
+            java.time.format.DateTimeFormatter formato =
+                    java.time.format.DateTimeFormatter
+                            .ofPattern("dd/MM/yyyy");
+
+            while (rs.next()) {
+
+                java.time.LocalDate fecha =
+                        rs.getDate("fecha").toLocalDate();
+
+                int total = rs.getInt("total");
+                int confirmados = rs.getInt("confirmados");
+
+                String estado = (total > 0 && total == confirmados)
+                        ? "Confirmado"
+                        : "Pendiente";
+
+                modelo.addRow(new Object[]{
+                    fecha.format(formato),
+                    total,
+                    estado,
+                    "Ver detalle"
+                });
+            }
         }
+
+        // Mostrar los gastos recuperados
+        tablaHistorial.setModel(modelo);
+
+    } catch (java.sql.SQLException e) {
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Error al cargar el historial: " + e.getMessage());
+
+        tablaHistorial.setModel(modelo);
     }
-
-    // Formato de fecha
-    java.time.format.DateTimeFormatter formato =
-            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    // Agregar las fechas a la tabla
-    for (java.util.Map.Entry<java.time.LocalDate, Integer> registro
-            : gastosPorFecha.entrySet()) {
-
-        // Consultar si el día ya fue confirmado
-        String estado = RegistroGastos.estaConfirmado(registro.getKey())
-                ? "Confirmado"
-                : "Pendiente";
-
-        modelo.addRow(new Object[]{
-            registro.getKey().format(formato),
-            registro.getValue(),
-            estado,
-            "Ver detalle"
-        });
-    }
-
-    // Mostrar los registros en la tabla
-    tablaHistorial.setModel(modelo);
 }
     public HistorialGastosDiarios() {
         initComponents();

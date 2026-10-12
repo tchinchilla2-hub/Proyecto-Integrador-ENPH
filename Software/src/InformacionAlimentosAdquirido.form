@@ -361,12 +361,11 @@
         <Component class="javax.swing.JComboBox" name="UnidadContenido">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
+              <StringArray count="4">
                 <StringItem index="0" value="Selecione una unidad"/>
-                <StringItem index="1" value="Gramos"/>
-                <StringItem index="2" value="Mililitros"/>
-                <StringItem index="3" value="Centrimetros c&#xfa;bicos"/>
-                <StringItem index="4" value=" "/>
+                <StringItem index="1" value="Mililitros"/>
+                <StringItem index="2" value="Litro"/>
+                <StringItem index="3" value="Gramos"/>
               </StringArray>
             </Property>
           </Properties>

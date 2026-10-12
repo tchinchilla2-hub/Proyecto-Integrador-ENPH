@@ -136,12 +136,13 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setText("Frecuencia de compra:");
 
-        FormaAdquisicion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una opción", "Compra", "Recibidos como pago por trabajo", "Regalo o donación", "Intercambio o trueque", "Traídos de la finca o producidos por el hogar", "Tomados de un negocio del hogar" }));
+        FormaAdquisicion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una opción", "Compra", "Regalo o donación", "Intercambio o trueque", "Traídos de la finca o producidos por el hogar", "Tomados de un negocio del hogar" }));
         FormaAdquisicion.addActionListener(this::FormaAdquisicionActionPerformed);
 
         FrecuenciaCompra.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una frecuencia", "Diario", "Varias veces por semana", "Semanal", "Quincenal", "Mensual", "Bimestral", "Trimestral", "Esporádico" }));
 
-        LugarCompra.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un lugar", "Supermercado", "Tienda de barrio", "Plaza de mercado", "Vendedor ambulante", "Restaurante", "Cafetería o comidas rápidas", "A través de internet", "Plazoleta de comidas" }));
+        LugarCompra.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un lugar", "Supermercado de cadena", "Tienda de barrio", "Plaza de mercado", "Vendedor ambulante", "Establecimiento especializado", "Restaurante", "Cafetería o comidas rápidas", "Persona particular", "A través de internet", "Plazoleta de comidas" }));
+        LugarCompra.addActionListener(this::LugarCompraActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -388,12 +389,26 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
     // Guardar valor pagado o estimado
     gastoActual.valorPagado = valor;
 
-    // Registrar el gasto en la lista temporal
-    RegistroGastos.guardar(gastoActual);
+      // Guardar primero el gasto en Oracle
+    try {
+        GastoDiarioDAO.guardar(
+                gastoActual,
+                DatosRecoleccion.codigoHogar
+        );
 
-    // Mostrar confirmación
-    javax.swing.JOptionPane.showMessageDialog(this,
-            "Gasto registrado correctamente");
+        // Agregar a la lista temporal solo si Oracle guardó el gasto
+        RegistroGastos.guardar(gastoActual);
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Gasto registrado correctamente en Oracle");
+
+    } catch (java.sql.SQLException e) {
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "No se pudo guardar el gasto: " + e.getMessage());
+
+        return;
+    }
 
     // Regresar al menú principal
     MenuPrincipal menu = new MenuPrincipal();
@@ -415,6 +430,10 @@ public class AdquisiciónClasificación extends javax.swing.JFrame {
         FrecuenciaCompra.setEnabled(false);
     }
     }//GEN-LAST:event_FormaAdquisicionActionPerformed
+
+    private void LugarCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LugarCompraActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LugarCompraActionPerformed
 
     /**
      * @param args the command line arguments

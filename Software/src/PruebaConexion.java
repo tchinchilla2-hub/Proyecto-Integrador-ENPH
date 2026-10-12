@@ -8,7 +8,10 @@
  * @author thain
  */
 
+
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class PruebaConexion {
 
@@ -18,13 +21,41 @@ public class PruebaConexion {
 
         if (conexion != null) {
 
-            System.out.println("LA BASE DE DATOS ESTÁ CONECTADA");
+            try {
+                Statement sentencia = conexion.createStatement();
 
-            ConexionOracle.cerrarConexion(conexion);
+                // Consultar los hogares registrados
+                ResultSet resultado = sentencia.executeQuery(
+                        "SELECT h.id, j.nombre, j.apellido, " +
+                        "j.num_identificacion " +
+                        "FROM hogar h " +
+                        "JOIN jefe_hogar j ON h.id = j.id_hogar " +
+                        "ORDER BY h.id"
+                );
 
-        } else {
+                System.out.println("HOGARES REGISTRADOS EN ORACLE:");
 
-            System.out.println("NO SE PUDO CONECTAR A ORACLE");
+                while (resultado.next()) {
+
+                    System.out.println(
+                            "Hogar: HG-" +
+                            String.format("%03d", resultado.getInt("id")) +
+                            " | Jefe: " +
+                            resultado.getString("nombre") + " " +
+                            resultado.getString("apellido") +
+                            " | Identificacion: " +
+                            resultado.getString("num_identificacion")
+                    );
+                }
+
+                resultado.close();
+                sentencia.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                ConexionOracle.cerrarConexion(conexion);
+            }
         }
     }
 }

@@ -14,12 +14,34 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionOracle {
-
+ // ==========================================================
+    // CONFIGURACIÓN DE CONEXIÓN A ORACLE
+    //
+    // EN CASA:
+    // HOST = "Thaina"
+    // PUERTO = "1521"
+    // SID = "XE"
+    // USUARIO = "ENPH"
+    //
+    // EN LA UNIVERSIDAD:
+    // 1. Cambiar HOST por la IP o nombre del servidor del profesor.
+    // 2. Cambiar PUERTO si el servidor utiliza uno diferente.
+    // 3. Cambiar SID por el identificador de la base de datos.
+    // 4. Cambiar USUARIO por el usuario asignado.
+    // 5. Configurar ENPH_DB_PASSWORD con la contraseña correcta.
+    //
+    // IMPORTANTE:
+    // La base de datos de la universidad debe tener las tablas
+    // del proyecto ENPH y sus registros necesarios.
+    // ==========================================================
+    
     // Parámetros de conexión a Oracle 10g
     private static final String HOST = "Thaina";
     private static final String PUERTO = "1521";
     private static final String SID = "XE";
     private static final String USUARIO = "ENPH";
+    // La contraseña se obtiene de una variable de entorno
+    // para evitar escribirla directamente en el código.
     private static final String CLAVE = System.getenv("ENPH_DB_PASSWORD");
 
     // URL de conexión a Oracle

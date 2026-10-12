@@ -98,42 +98,79 @@ public class Acceso extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        // TODO add your handling code here:
-        String identificacion = txtIdentificacion.getText().trim();
-        String contrasena = txtContrasena.getText();
         
-        //Verificar que los campos no estén vacios
-        if (identificacion.isEmpty() || contrasena.isEmpty()){
-            javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar su número de identificación y contraseña");
+    // TODO add your handling code here:
+    String identificacion = txtIdentificacion.getText().trim();
+    String contrasena = txtContrasena.getText();
+
+    //Verificar que los campos no estén vacios
+    if (identificacion.isEmpty() || contrasena.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Debe ingresar su número de identificación y contraseña");
+        return;
+    }
+
+    //Validar los datos de prueba
+    // Toca cambiar el ingreso según lo que tenemos en la base de datos.
+    if (!contrasena.equals("1234")) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Número de identificación o contraseña son incorrectos");
+        return;
+    }
+
+    String sql = "SELECT h.id, e.fecha_inicio "
+            + "FROM jefe_hogar j "
+            + "JOIN hogar h ON j.id_hogar = h.id "
+            + "JOIN encuesta e ON e.id_hogar = h.id "
+            + "WHERE j.num_identificacion = ?";
+
+    try (java.sql.Connection conexion =
+            ConexionOracle.obtenerConexion()) {
+
+        if (conexion == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "No se pudo conectar con Oracle");
             return;
         }
-        //Validar los datos de prueba
-        // Toca cambiar el ingreso según lo que tenemos en la base de datos.
-        if (identificacion.equals("1234567") && contrasena.equals("1234")) {
 
-    // Datos provisionales del hogar para pruebas
-    String codigoHogar = "HG-001";
+        try (java.sql.PreparedStatement consulta =
+                conexion.prepareStatement(sql)) {
 
-    java.time.LocalDate fechaInicio =
-            java.time.LocalDate.of(2026, 10, 1);
+            consulta.setString(1, identificacion);
 
-    // Registrar los datos del hogar en el sistema
-    DatosRecoleccion.iniciarRecoleccion(codigoHogar, fechaInicio);
+            try (java.sql.ResultSet resultado =
+                    consulta.executeQuery()) {
 
-    // Abrir el menú principal
-    MenuPrincipal menu = new MenuPrincipal();
+                if (resultado.next()) {
 
-    menu.setLocationRelativeTo(null);
-    menu.setVisible(true);
+                    int idHogar = resultado.getInt("id");
 
-    this.dispose();
+                    java.time.LocalDate fechaInicio =
+                            resultado.getDate("fecha_inicio")
+                                    .toLocalDate();
 
-    } else {
+                    String codigoHogar =
+                            String.format("HG-%03d", idHogar);
 
-        javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "Número de identificación o contraseña son incorrectos"
-        );
+                    DatosRecoleccion.iniciarRecoleccion(
+                            codigoHogar, fechaInicio);
+
+                    MenuPrincipal menu = new MenuPrincipal();
+                    menu.setLocationRelativeTo(null);
+                    menu.setVisible(true);
+
+                    this.dispose();
+
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this,
+                            "No se encontró un hogar asociado a esa identificación");
+                }
+            }
+        }
+
+    } catch (java.sql.SQLException e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Error al consultar Oracle: " + e.getMessage());
     }
     }//GEN-LAST:event_btnIngresarActionPerformed
 

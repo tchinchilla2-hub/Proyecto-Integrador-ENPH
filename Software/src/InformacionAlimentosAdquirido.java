@@ -152,7 +152,7 @@ public class InformacionAlimentosAdquirido extends javax.swing.JFrame {
         jLabel17.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel17.setText("Unidad del contenido");
 
-        UnidadContenido.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione una unidad", "Gramos", "Mililitros", "Centrimetros cúbicos", " " }));
+        UnidadContenido.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione una unidad", "Mililitros", "Litro", "Gramos" }));
 
         Contenido.addActionListener(this::ContenidoActionPerformed);
 

@@ -282,14 +282,13 @@
         <Component class="javax.swing.JComboBox" name="FormaAdquisicion">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="7">
+              <StringArray count="6">
                 <StringItem index="0" value="Seleccione una opci&#xf3;n"/>
                 <StringItem index="1" value="Compra"/>
-                <StringItem index="2" value="Recibidos como pago por trabajo"/>
-                <StringItem index="3" value="Regalo o donaci&#xf3;n"/>
-                <StringItem index="4" value="Intercambio o trueque"/>
-                <StringItem index="5" value="Tra&#xed;dos de la finca o producidos por el hogar"/>
-                <StringItem index="6" value="Tomados de un negocio del hogar"/>
+                <StringItem index="2" value="Regalo o donaci&#xf3;n"/>
+                <StringItem index="3" value="Intercambio o trueque"/>
+                <StringItem index="4" value="Tra&#xed;dos de la finca o producidos por el hogar"/>
+                <StringItem index="5" value="Tomados de un negocio del hogar"/>
               </StringArray>
             </Property>
           </Properties>
@@ -323,19 +322,24 @@
         <Component class="javax.swing.JComboBox" name="LugarCompra">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="9">
+              <StringArray count="11">
                 <StringItem index="0" value="Seleccione un lugar"/>
-                <StringItem index="1" value="Supermercado"/>
+                <StringItem index="1" value="Supermercado de cadena"/>
                 <StringItem index="2" value="Tienda de barrio"/>
                 <StringItem index="3" value="Plaza de mercado"/>
                 <StringItem index="4" value="Vendedor ambulante"/>
-                <StringItem index="5" value="Restaurante"/>
-                <StringItem index="6" value="Cafeter&#xed;a o comidas r&#xe1;pidas"/>
-                <StringItem index="7" value="A trav&#xe9;s de internet"/>
-                <StringItem index="8" value="Plazoleta de comidas"/>
+                <StringItem index="5" value="Establecimiento especializado"/>
+                <StringItem index="6" value="Restaurante"/>
+                <StringItem index="7" value="Cafeter&#xed;a o comidas r&#xe1;pidas"/>
+                <StringItem index="8" value="Persona particular"/>
+                <StringItem index="9" value="A trav&#xe9;s de internet"/>
+                <StringItem index="10" value="Plazoleta de comidas"/>
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LugarCompraActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
